@@ -29,8 +29,8 @@ ALLOWED_CHATS = [-1645180577, -5050482476]
 
 # Хардкод: Специальный период для RussianBeerHunter
 SPECIAL_PIDOR_USERNAME = "RussianBeerHunter"
-SPECIAL_PIDOR_START = date(2026, 2, 17)  # 17.02.2026
-SPECIAL_PIDOR_END = date(2026, 2, 24)    # 24.02.2026
+SPECIAL_PIDOR_START = date(2026, 2, 18)  # 18.02.2026
+SPECIAL_PIDOR_END = date(2026, 2, 25)    # 25.02.2026
 
 
 def get_today() -> int:
@@ -131,7 +131,7 @@ async def run_game(message: Message, game_type: str, messages: list):
         await message.answer(NO_PLAYERS)
         return
     
-    # ХАРДКОД: Специальный период для RussianBeerHunter (17.02.2026 - 24.02.2026)
+    # ХАРДКОД: Специальный период для RussianBeerHunter (18.02.2026 - 25.02.2026)
     if game_type == "pidor_of_the_day" and is_special_pidor_period():
         # Найти RussianBeerHunter среди игроков
         special_user = None
@@ -143,19 +143,20 @@ async def run_game(message: Message, game_type: str, messages: list):
         
         if special_user:
             winner_user = special_user
-            winner_name = special_user.get_notification_name()
+            winner_name = special_user.get_stats_name()  # Используем формат "firstname (@username)"
             logger.info(f"Special period: {SPECIAL_PIDOR_USERNAME} is pidor of the day")
         else:
             # Если RussianBeerHunter не зарегистрирован, выбрать случайного
             logger.warning(f"{SPECIAL_PIDOR_USERNAME} not found in players, selecting random")
             winner_data = random.choice(players)
             winner_user = winner_data[0]
-            winner_name = winner_user.get_notification_name()
+            winner_name = winner_user.get_stats_name() if game_type == "pidor_of_the_day" else winner_user.get_notification_name()
     else:
         # Select random winner
         winner_data = random.choice(players)
         winner_user = winner_data[0]
-        winner_name = winner_user.get_notification_name()
+        # Для обоих игр используем формат "firstname (@username)"
+        winner_name = winner_user.get_stats_name()
     
     # Save winner to database
     await db.set_winner(chat_id, winner_user.user_id, winner_name, today, game_type)

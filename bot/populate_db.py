@@ -40,7 +40,7 @@ DUPLICATE_USERS = [
 
 # Результаты Красавчик Дня
 USER_OF_THE_DAY_RESULTS = {
-    "voylur": 44,
+    "voylur": 45,
     "dfrip": 33,
     "gusar_off": 32,
     "Mestr3z": 30,
@@ -48,7 +48,7 @@ USER_OF_THE_DAY_RESULTS = {
     "vesellluxa": 28,
     "desomorphine187": 26,
     "Toony_Hoodz": 25,
-    "Daniil Perederiy": 23,  # по firstname
+    "Daniil Perederiy": 24,  # по firstname
     "rim1sta": 22,  # первая запись
     "romanovh": 20,
     "RussianBeerHunter": 20,
@@ -80,8 +80,10 @@ PIDOR_OF_THE_DAY_RESULTS = {
     "Cobra2525": 5,
 }
 
-# ID чата (замените на реальный ID вашего чата)
-DEFAULT_CHAT_ID = -5050482476
+# ID чатов
+TEST_CHAT_ID = -5050482476  # Тестовый чат
+PROD_CHAT_ID = -1645180577  # Продакшн чат
+CHAT_IDS = [TEST_CHAT_ID, PROD_CHAT_ID]
 
 
 async def populate_database():
@@ -104,9 +106,11 @@ async def populate_database():
         
         logger.info("Starting database population...")
         
-        # Создать чат
-        chat = Chat(chat_id=DEFAULT_CHAT_ID)
-        session.add(chat)
+        # Создать оба чата
+        for chat_id in CHAT_IDS:
+            chat = Chat(chat_id=chat_id)
+            session.add(chat)
+            logger.info(f"Created chat: {chat_id}")
         
         # Добавить пользователей
         for user_id, username, firstname in USERS_DATA:
@@ -119,17 +123,18 @@ async def populate_database():
             user_counter = USER_OF_THE_DAY_RESULTS.get(search_key, 0)
             pidor_counter = PIDOR_OF_THE_DAY_RESULTS.get(search_key, 0)
             
-            # Создать связь chat-user
-            chat_user = ChatUser(
-                chat_id=DEFAULT_CHAT_ID,
-                user_id=user_id,
-                user_day_counter=user_counter,
-                pidor_counter=pidor_counter
-            )
-            session.add(chat_user)
+            # Создать связь chat-user для КАЖДОГО чата
+            for chat_id in CHAT_IDS:
+                chat_user = ChatUser(
+                    chat_id=chat_id,
+                    user_id=user_id,
+                    user_day_counter=user_counter,
+                    pidor_counter=pidor_counter
+                )
+                session.add(chat_user)
             
             logger.info(
-                f"Added user: {firstname} (@{username}) - "
+                f"Added user to both chats: {firstname} (@{username}) - "
                 f"User: {user_counter}, Pidor: {pidor_counter}"
             )
         
@@ -139,16 +144,18 @@ async def populate_database():
             fake_user = User(user_id=fake_user_id, username=username, firstname=firstname)
             session.add(fake_user)
             
-            # Создать связь chat-user для фейкового пользователя
-            chat_user = ChatUser(
-                chat_id=DEFAULT_CHAT_ID,
-                user_id=fake_user_id,
-                user_day_counter=user_counter,
-                pidor_counter=pidor_counter
-            )
-            session.add(chat_user)
+            # Создать связь chat-user для фейкового пользователя в КАЖДОМ чате
+            for chat_id in CHAT_IDS:
+                chat_user = ChatUser(
+                    chat_id=chat_id,
+                    user_id=fake_user_id,
+                    user_day_counter=user_counter,
+                    pidor_counter=pidor_counter
+                )
+                session.add(chat_user)
+            
             logger.info(
-                f"Added duplicate entry: {firstname} (@{username}) - "
+                f"Added duplicate entry to both chats: {firstname} (@{username}) - "
                 f"User: {user_counter}, Pidor: {pidor_counter} (fake_id: {fake_user_id})"
             )
         

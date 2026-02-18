@@ -45,7 +45,7 @@ USER_OF_THE_DAY_RESULTS = {
     "gusar_off": 32,
     "Mestr3z": 30,
     "jimmyminds": 29,
-    "vesellluxa": 28,
+    "vesellluxa": 29,
     "desomorphine187": 26,
     "Toony_Hoodz": 25,
     "Daniil Perederiy": 24,  # по firstname
@@ -62,7 +62,7 @@ USER_OF_THE_DAY_RESULTS = {
 # Результаты ПИДОР Дня
 PIDOR_OF_THE_DAY_RESULTS = {
     "Toony_Hoodz": 34,
-    "Daniil Perederiy": 33,  # по firstname
+    "Daniil Perederiy": 34,  # по firstname
     "jimmyminds": 30,
     "vesellluxa": 29,
     "voylur": 28,
